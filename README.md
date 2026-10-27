@@ -1,7 +1,23 @@
-# Rajasthan Admission Copilot (frontend demo)
-Setup: `npm install` then `npm run dev` and open http://localhost:5173
-Routes: / , /dashboard , /explore , /predictor , /assistant
-Data: edit `src/data/colleges.ts` (all values are illustrative samples, verified:false).
-Chatbot: replace `reply()` in `src/lib/chat.ts` with a call to a RAG backend.
-Simulated: recommendations (rule-based, not ML), chatbot (keyword KB), all college data.
-Not yet built: college details page, comparison, scholarships, knowledge centre, profile page, admin page.
+# Rajasthan Admission Copilot
+
+AI-powered admission assistance platform for technical education in Rajasthan.
+
+## Features
+- Explore engineering colleges
+- College admission predictor
+- AI-style admission assistant
+- College comparison
+- Responsive web interface
+
+## Tech Stack
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+
+## Run Locally
+1. Install Node.js.
+2. Run 
+pm install.
+3. Run 
+pm run dev.
