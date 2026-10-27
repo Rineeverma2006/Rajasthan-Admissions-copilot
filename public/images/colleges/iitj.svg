@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#091e3a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="gridPat" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.07"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="480" fill="url(#bgGrad)"/>
+  <rect width="800" height="480" fill="url(#gridPat)"/>
+
+  <!-- Glow circle -->
+  <circle cx="400" cy="180" r="220" fill="url(#glowGrad)"/>
+
+  <!-- Architectural Facade Silhouettes -->
+  <g fill="#0b192e" opacity="0.6">
+    <!-- Campus Building 1 -->
+    <rect x="60" y="240" width="140" height="180" rx="4"/>
+    <rect x="80" y="260" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="115" y="260" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="150" y="260" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="80" y="310" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="115" y="310" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="150" y="310" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="80" y="360" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="115" y="360" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="150" y="360" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+
+    <!-- Central Grand Faculty Block -->
+    <rect x="230" y="160" width="340" height="260" rx="6"/>
+    <!-- Triangular pediment or dome -->
+    <path d="M220 160 L400 90 L580 160 Z" fill="#38bdf8" fill-opacity="0.75"/>
+    <!-- Pillars -->
+    <rect x="270" y="170" width="24" height="230" rx="2" fill="#ffffff" fill-opacity="0.3"/>
+    <rect x="330" y="170" width="24" height="230" rx="2" fill="#ffffff" fill-opacity="0.3"/>
+    <rect x="390" y="170" width="24" height="230" rx="2" fill="#ffffff" fill-opacity="0.3"/>
+    <rect x="450" y="170" width="24" height="230" rx="2" fill="#ffffff" fill-opacity="0.3"/>
+    <rect x="510" y="170" width="24" height="230" rx="2" fill="#ffffff" fill-opacity="0.3"/>
+
+    <!-- Campus Building 2 -->
+    <rect x="600" y="220" width="140" height="200" rx="4"/>
+    <rect x="620" y="240" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="655" y="240" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="690" y="240" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="620" y="290" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="655" y="290" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+    <rect x="690" y="290" width="25" height="35" rx="2" fill="#ffffff" fill-opacity="0.25"/>
+  </g>
+
+  <!-- Green Lawn & Plaza -->
+  <path d="M0 400 L800 400 L800 480 L0 480 Z" fill="#0b192e" fill-opacity="0.95"/>
+  <line x1="0" y1="400" x2="800" y2="400" stroke="#38bdf8" stroke-width="3" opacity="0.6"/>
+
+  <!-- University Badge Card Overlay -->
+  <rect x="28" y="28" width="744" height="74" rx="12" fill="url(#glassGrad)" stroke="#ffffff" stroke-width="1" stroke-opacity="0.2"/>
+  
+  <!-- Emblem Circle -->
+  <circle cx="68" cy="65" r="22" fill="#38bdf8" fill-opacity="0.9"/>
+  <text x="68" y="72" font-family="'Inter', system-ui, sans-serif" font-weight="bold" font-size="20" fill="#ffffff" text-anchor="middle">🏛️</text>
+
+  <!-- Title Text -->
+  <text x="104" y="58" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="20" fill="#ffffff" letter-spacing="0.2">IIT Jodhpur</text>
+  <text x="104" y="80" font-family="'Inter', system-ui, sans-serif" font-weight="500" font-size="12" fill="#e2e8f0" opacity="0.9">Indian Institute of Technology • Jodhpur</text>
+
+  <!-- Tag Pill -->
+  <rect x="640" y="47" width="114" height="28" rx="14" fill="#0b192e" fill-opacity="0.75" stroke="#38bdf8" stroke-width="1"/>
+  <text x="697" y="65" font-family="'Inter', system-ui, sans-serif" font-weight="600" font-size="11" fill="#38bdf8" text-anchor="middle">CAMPUS VIEW</text>
+</svg>

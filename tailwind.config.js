@@ -1,0 +1,71 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        navy: {
+          50: '#F0F4F9',
+          100: '#D9E2EE',
+          200: '#B3C6DE',
+          300: '#8DA9CD',
+          400: '#5E85B6',
+          500: '#3D699F',
+          600: '#2A4B75',
+          700: '#1D3557',
+          800: '#132644',
+          900: '#0B192E',
+          950: '#050D1A',
+          DEFAULT: '#0B192E',
+        },
+        royal: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          DEFAULT: '#2563EB',
+        },
+        gold: {
+          50: '#FFFDF7',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
+          DEFAULT: '#D97706',
+        },
+        sand: '#C4A47C',
+        saffron: '#D97706',
+        ivory: '#F8FAFC',
+        slate2: '#64748B',
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        '2xs': '0 1px 1px 0 rgba(11, 25, 46, 0.03)',
+        xs: '0 1px 2px 0 rgba(11, 25, 46, 0.04)',
+        subtle: '0 1px 3px 0 rgba(11, 25, 46, 0.05), 0 1px 2px 0 rgba(11, 25, 46, 0.03)',
+        card: '0 4px 20px -2px rgba(11, 25, 46, 0.06), 0 2px 6px -1px rgba(11, 25, 46, 0.03)',
+        'card-hover': '0 12px 28px -4px rgba(11, 25, 46, 0.12), 0 4px 10px -2px rgba(11, 25, 46, 0.06)',
+        dropdown: '0 10px 30px -5px rgba(11, 25, 46, 0.15)',
+      },
+      borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+      }
+    },
+  },
+  plugins: [],
+}
