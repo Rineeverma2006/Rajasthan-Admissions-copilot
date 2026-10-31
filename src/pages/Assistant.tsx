@@ -57,14 +57,14 @@ export default function Assistant() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: q, history: prior, language })
       })
-      const data = await response.json() as { answer?: string; error?: string }
-      if (!response.ok || !data.answer) throw new Error(data.error || 'Could not get an AI response.')
+      const data = await response.json() as { answer?: string; error?: string; detail?: string }
+      if (!response.ok || !data.answer) throw new Error([data.error || 'Could not get an AI response.', data.detail ? `Diagnostic: ${data.detail}` : ''].filter(Boolean).join(' '))
       const botTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       setMessages(prev => [...prev, { role: 'bot', text: data.answer!, time: botTime }])
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Something went wrong.'
       setApiError(message)
-      setMessages(prev => [...prev, { role: 'bot', text: `I could not verify an answer right now. ${message} Please try again later. Do not rely on an unverified deadline or cutoff.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }])
+      setMessages(prev => [...prev, { role: 'bot', text: `I could not get an AI response. ${message}`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }])
     } finally {
       setIsTyping(false)
     }
