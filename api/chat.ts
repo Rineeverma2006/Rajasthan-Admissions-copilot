@@ -12,33 +12,33 @@ export default async function handler(req: Request, res: Response) {
   // No-credit FAQ mode: answers common questions from a small, transparent set
   // of official-source-backed facts. Unknown questions are routed to official links.
   const q = message.toLowerCase()
-  const hindi = requestedLanguage === "hindi" || (requestedLanguage === "auto" && /[\\u0900-\\u097f]/.test(message))
+  const hindi = requestedLanguage === "hindi" || (requestedLanguage === "auto" && /[\u0900-\u097f]/.test(message))
   const hinglish = requestedLanguage === "hinglish" || (requestedLanguage === "auto" && /kya|kaise|konsa|kaun|btech|college|batao|chahiye|hai|hoga|hoti|krna|karna|rank/i.test(message))
   const marwari = requestedLanguage === "marwari"
-  const official = "Official REAP portal: https://reaprajasthan.co.in/\\nOfficial REAP FAQ: https://help.reaprajasthan.co.in/FAQArea/FAQSupport/Index\\nOfficial college/branch details and seat matrix: https://cegadmissions.co.in/SeatsMatrix/Index?Project=REAP"
+  const official = "Official REAP portal: https://reaprajasthan.co.in/\nOfficial REAP FAQ: https://help.reaprajasthan.co.in/FAQArea/FAQSupport/Index\nOfficial college/branch details and seat matrix: https://cegadmissions.co.in/SeatsMatrix/Index?Project=REAP"
   const unknown = hindi
-    ? "इस सवाल का verified जवाब मेरे offline FAQ में उपलब्ध नहीं है। मैं अनुमान नहीं लगाऊँगा। कृपया आधिकारिक REAP links देखें।\\n\\n" + official
+    ? "इस सवाल का verified जवाब मेरे offline FAQ में उपलब्ध नहीं है। मैं अनुमान नहीं लगाऊँगा। कृपया आधिकारिक REAP links देखें।\n\n" + official
     : marwari
-      ? "ई सवाल रो पक्को जवाब म्हारे offline FAQ में कोनी। मैं अंदाजो लगाकर गलत जानकारी नीं दूँ। official REAP लिंक देखो।\\n\\n" + official
-      : "I don't have a verified answer to that in the offline FAQ, so I won't guess. Please check the official REAP sources.\\n\\n" + official
+      ? "ई सवाल रो पक्को जवाब म्हारे offline FAQ में कोनी। मैं अंदाजो लगाकर गलत जानकारी नीं दूँ। official REAP लिंक देखो।\n\n" + official
+      : "I don't have a verified answer to that in the offline FAQ, so I won't guess. Please check the official REAP sources.\n\n" + official
   let faqAnswer = ""
   if (/college|colleges|konsa|kaunsa|which college|btech college|कॉलेज|कौनसा|कौन सा/.test(q)) {
     faqAnswer = (hindi ? "REAP B.E./B.Tech के कॉलेज और उपलब्ध branches official college/seat-matrix portal पर देखें। यहाँ verified live cutoff database उपलब्ध नहीं है, इसलिए मैं आपके rank पर मिलने वाला college claim नहीं कर सकता। अपना JEE Main rank/REAP merit, category, Rajasthan domicile status और preferred branch बताएं—मैं बता सकता हूँ कि official data में क्या check करना है।"
       : hinglish || marwari ? "REAP B.E./B.Tech ke colleges aur available branches official college/seat-matrix portal par check karo. Is site mein abhi verified live cutoff database nahi hai, isliye main tumhari rank par college milne ka claim nahi karunga. Apni JEE Main rank/REAP merit, category, Rajasthan domicile status aur preferred branch batao—main guide kar dunga ki official data mein kya check karna hai."
-      : "Check colleges and available branches on the official REAP college/seat-matrix portal. This site does not yet have a verified live cutoff database, so I cannot claim which college your rank will get. Share your JEE Main rank/REAP merit, category, Rajasthan domicile status and preferred branch, and I can guide you through the official data.") + "\\n\\n" + official
+      : "Check colleges and available branches on the official REAP college/seat-matrix portal. This site does not yet have a verified live cutoff database, so I cannot claim which college your rank will get. Share your JEE Main rank/REAP merit, category, Rajasthan domicile status and preferred branch, and I can guide you through the official data.") + "\n\n" + official
   } else if (/eligib|percentage|percent|45%|40%|पात्र|योग्य/.test(q)) {
     faqAnswer = (hindi ? "REAP 2026 booklet के अनुसार, first-year B.E./B.Tech eligibility में 10+2 के specified subjects और subject-group rules लागू होते हैं; सामान्य न्यूनतम aggregate 45% और निर्दिष्ट reserved categories के लिए 40% बताया गया है। अपने subject combination/category पर final confirmation official booklet से करें।"
-      : "The REAP 2026 information booklet states a general minimum of 45% aggregate in the specified qualifying subjects, with 40% for specified reserved categories. Subject-combination and category rules apply, so confirm your case in the official booklet.") + "\\n\\nOfficial booklet: https://reaprajasthan.com/documents/4a07bdea-b89b-4665-93b2-8f3882cf2c4dREAP-2026_Booklet_Final.pdf"
+      : "The REAP 2026 information booklet states a general minimum of 45% aggregate in the specified qualifying subjects, with 40% for specified reserved categories. Subject-combination and category rules apply, so confirm your case in the official booklet.") + "\n\nOfficial booklet: https://reaprajasthan.com/documents/4a07bdea-b89b-4665-93b2-8f3882cf2c4dREAP-2026_Booklet_Final.pdf"
   } else if (/document|certificate|दस्तावेज|कागज/.test(q)) {
-    faqAnswer = "Reporting ke liye applicable documents mein REAP allotment letter, application/registration form, Class 10 and 12 marksheets, JEE Main score card (if applicable), domicile/category certificate (if applicable), medical fitness certificate and income certificate (if required) ho sakte hain. Exact checklist candidate category aur current booklet ke hisaab se verify karein.\\n\\nOfficial booklet: https://reaprajasthan.com/documents/4a07bdea-b89b-4665-93b2-8f3882cf2c4dREAP-2026_Booklet_Final.pdf"
+    faqAnswer = "Reporting ke liye applicable documents mein REAP allotment letter, application/registration form, Class 10 and 12 marksheets, JEE Main score card (if applicable), domicile/category certificate (if applicable), medical fitness certificate and income certificate (if required) ho sakte hain. Exact checklist candidate category aur current booklet ke hisaab se verify karein.\n\nOfficial booklet: https://reaprajasthan.com/documents/4a07bdea-b89b-4665-93b2-8f3882cf2c4dREAP-2026_Booklet_Final.pdf"
   } else if (/date|deadline|last date|schedule|kab|तारीख|अंतिम तिथि/.test(q)) {
-    faqAnswer = "REAP dates can change through revised notices. I cannot confirm a new/current deadline from this offline FAQ; check the latest notice on the official REAP portal before acting.\\n\\n" + official
+    faqAnswer = "REAP dates can change through revised notices. I cannot confirm a new/current deadline from this offline FAQ; check the latest notice on the official REAP portal before acting.\n\n" + official
   } else if (/rank|cutoff|cut off|chance|admission mile|merit|रैंक|कट.?ऑफ/.test(q)) {
-    faqAnswer = "I can't estimate admission chances without verified round-wise cutoff data for the exact college, branch, category and quota. This site's cutoff database is not populated yet. Check official REAP merit/allotment and seat-matrix records; don't treat a guessed rank range as a prediction.\\n\\n" + official
+    faqAnswer = "I can't estimate admission chances without verified round-wise cutoff data for the exact college, branch, category and quota. This site's cutoff database is not populated yet. Check official REAP merit/allotment and seat-matrix records; don't treat a guessed rank range as a prediction.\n\n" + official
   } else if (/fee|fees|registration fee|फीस|शुल्क/.test(q)) {
-    faqAnswer = "REAP 2026 portal listed an application/registration fee of ₹885, but fees can change and other college/reporting charges may apply. Verify the current cycle's official notice before paying.\\n\\n" + official
+    faqAnswer = "REAP 2026 portal listed an application/registration fee of ₹885, but fees can change and other college/reporting charges may apply. Verify the current cycle's official notice before paying.\n\n" + official
   } else if (/helpline|contact|support|phone|number|संपर्क|हेल्पलाइन/.test(q)) {
-    faqAnswer = "The REAP 2026 portal lists helpline numbers 8279183303 and 8764818563 (check the portal for current working hours and updates). Never share your password or OTP with anyone.\\n\\n" + official
+    faqAnswer = "The REAP 2026 portal lists helpline numbers 8279183303 and 8764818563 (check the portal for current working hours and updates). Never share your password or OTP with anyone.\n\n" + official
   }
   if (faqAnswer) return res.status(200).json({ answer: faqAnswer, grounded: true, sources: 1, fallback: true, mode: "offline_faq" })
   if (/^(hi|hello|hey|namaste|राम राम|नमस्ते|ram ram)[!?. ]*$/i.test(q)) {
@@ -125,7 +125,7 @@ ${evidence || "No matching knowledge-base records were found. State that you can
         const fallbackAnswer = evidence
           ? `Main AI response abhi generate nahi kar paa raha kyunki website ke OpenAI API credits khatam hain. Neeche available knowledge-base information de raha hoon; ise current notice se verify kar lena:\n\n${evidence}\n\nOfficial REAP portal: https://reaprajasthan.co.in/\nOfficial seat matrix: https://cegadmissions.co.in/SeatsMatrix/Index?Project=REAP\n\nFull conversational answers restore karne ke liye site owner ko OpenAI API billing mein credits add karne honge.`
           : `Main abhi full AI answer generate nahi kar paa raha kyunki website ke OpenAI API credits khatam hain. Main verified college/cutoff records ke bina college names ya admission chances guess nahi karunga.\n\nOfficial REAP portal: https://reaprajasthan.co.in/\nOfficial REAP seat matrix: https://cegadmissions.co.in/SeatsMatrix/Index?Project=REAP\n\nFull chatbot answers restore karne ke liye site owner ko OpenAI API billing mein credits add karne honge.`
-        return res.status(200).json({ answer: fallbackAnswer, grounded: Boolean(evidence), sources: evidence ? evidence.split("\\n\\n").filter(Boolean).length : 0, fallback: true })
+        return res.status(200).json({ answer: fallbackAnswer, grounded: Boolean(evidence), sources: evidence ? evidence.split("\n\n").filter(Boolean).length : 0, fallback: true })
       }
       return res.status(502).json({ error: userMessage, detail: providerCode || `HTTP ${response.status}` })
     }
