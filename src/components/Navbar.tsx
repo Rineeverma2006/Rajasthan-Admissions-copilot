@@ -50,7 +50,7 @@ export default function Navbar() {
                 Rajasthan Admission Copilot
               </span>
               <span className="hidden sm:inline-flex rounded-full bg-gold-50 border border-gold-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gold-800">
-                REAP 2024
+                REAP 2026
               </span>
             </div>
             <p className="hidden xs:block text-[11px] font-medium text-slate-500">
