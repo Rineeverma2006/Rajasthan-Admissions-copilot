@@ -9,6 +9,7 @@ export default async function handler(req: Request, res: Response) {
   const message = typeof body?.message === "string" ? body.message.trim() : ""
   if (!message || message.length > 2000) return res.status(400).json({ error: "Enter a question of up to 2,000 characters." })
   const requestedLanguage = typeof body?.language === "string" ? body.language : "auto"
+  const apiKey = process.env.OPENAI_API_KEY || ""
   // No-credit FAQ mode: answers common questions from a small, transparent set
   // of official-source-backed facts. Unknown questions are routed to official links.
   const q = message.toLowerCase()
@@ -132,7 +133,8 @@ ${evidence || "No matching knowledge-base records were found. State that you can
     const answer = data.choices?.[0]?.message?.content
     if (!answer) return res.status(502).json({ error: "The AI provider returned an empty response." })
     return res.status(200).json({ answer, grounded: Boolean(evidence), sources: evidence ? evidence.split("\n\n").filter(Boolean).length : 0 })
-  } catch {
-    return res.status(502).json({ error: "Could not reach the AI service. Please try again." })
+  } catch (error) {
+    console.error("OpenAI chat network failure", error instanceof Error ? error.message.slice(0, 200) : "Unknown network error")
+    return res.status(200).json({ answer: unknown, grounded: false, sources: 0, fallback: true, mode: "offline_faq" })
   }
 }
