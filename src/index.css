@@ -75,3 +75,13 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+
+/* Dark premium app shell */
+.app-shell { background: #080d1b !important; color: #e5e7eb; }
+.app-shell .bg-slate-50 { background-color: #0f172a !important; }
+.app-shell .bg-white { background-color: #111a2d !important; }
+.app-shell .text-slate-600 { color: #aab7ca !important; }
+.app-shell .text-slate-500 { color: #aab7ca !important; }
+.app-shell .text-slate-800 { color: #e2e8f0 !important; }
+.app-shell input, .app-shell select, .app-shell textarea { background-color: #0b1220; color: #e5e7eb; }
