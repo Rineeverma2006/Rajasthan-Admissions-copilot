@@ -7,7 +7,7 @@ import CollegeModal from '../components/CollegeModal'
 
 const cities = [...new Set(COLLEGES.map(c => c.city))].sort()
 
-type LivePrediction = { results: Array<{ id: number; college_name: string; city: string; branch: string; annual_fee: number | null; cutoff_rank: number; cutoff_year: number; counselling: string; source_url: string; verified_at: string | null; fit: 'Likely' | 'Possible' | 'Stretch'; note: string }>; count: number; dataStatus: string; disclaimer: string }
+type LivePrediction = { results: Array<{ id: number; college_name: string; city: string; branch: string; annual_fee: number | null; cutoff_rank: number; cutoff_year: number; counselling: string; source_url: string; verified_at: string | null; fit: 'Likely' | 'Possible' | 'Stretch' | 'Historical reference'; note: string }>; count: number; dataStatus: string; disclaimer: string }
 
 export default function Predictor() {
   const [f, setF] = useState({
@@ -82,7 +82,7 @@ export default function Predictor() {
           Rajasthan College Predictor
         </h1>
         <p className="mt-1 text-sm text-slate-600 max-w-3xl">
-          Compare your details only against verified historical REAP cutoff records available in the database. No verified cutoff records are currently loaded, so the tool will not fabricate college predictions.
+          Compare your details against available historical REAP records. Results marked “Historical reference” are not verified closing ranks or current-year admission predictions.
         </p>
       </div>
 
@@ -313,10 +313,10 @@ export default function Predictor() {
                 <Sparkles size={32} />
               </div>
               <h3 className="font-heading text-xl font-bold text-navy-900">
-                Build a shortlist from verified data
+                Check available historical references
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Enter your details to query the live cutoff database. Until verified college/branch/cutoff records are loaded, the tool will explicitly show that results are unavailable.
+                Enter your details to search the available database. Historical MBM University indicative merits may appear; these are self-declared, not verified closing ranks, and do not establish current-year admission chances.
               </p>
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
@@ -346,10 +346,10 @@ export default function Predictor() {
                 <AlertCircle size={28} />
               </div>
               <h3 className="font-heading text-lg font-bold text-navy-900">
-                No Sample Colleges Match This Exact Filter
+                No matching records for these filters
               </h3>
               <p className="mt-1.5 text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
-                None of our sample colleges match your combination of branch, budget, and city. Try selecting "Any Branch", "Any City", or increasing your budget to ₹3,00,000+.
+                No records matched this branch, city and budget combination. Try clearing the city filter or increasing the budget. Historical records may have unknown fees and cannot confirm budget fit.
               </p>
               <button
                 type="button"
