@@ -82,7 +82,7 @@ export default function Predictor() {
           Rajasthan College Predictor
         </h1>
         <p className="mt-1 text-sm text-slate-600 max-w-3xl">
-          Evaluate your entrance test rank (JEE Main / REAP merit) against illustrative historical cutoff benchmarks. Categorize institutes into Likely, Possible, and Stretch fits.
+          Compare your details only against verified historical REAP cutoff records available in the database. No verified cutoff records are currently loaded, so the tool will not fabricate college predictions.
         </p>
       </div>
 
@@ -271,7 +271,7 @@ export default function Predictor() {
               </li>
             </ul>
             <div className="pt-2 border-t border-slate-200/60 text-[11px] text-slate-500">
-              <strong>Illustrative benchmark notice:</strong> Calculations are based on deterministic historical sample thresholds. Real REAP/CSAB cutoffs fluctuate annually based on candidate pool dynamics.
+              <strong>Illustrative benchmark notice:</strong> Only verified records stored in the live database can produce results. The current database has no cutoff records. Sample/demo data is not used as a substitute.
             </div>
           </div>
         </div>
@@ -313,29 +313,29 @@ export default function Predictor() {
                 <Sparkles size={32} />
               </div>
               <h3 className="font-heading text-xl font-bold text-navy-900">
-                Ready to Predict Your College Fits
+                Build a shortlist from verified data
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Enter your entrance test rank, select your preferred engineering branch and budget limit on the left to see instant customized recommendations.
+                Enter your details to query the live cutoff database. Until verified college/branch/cutoff records are loaded, the tool will explicitly show that results are unavailable.
               </p>
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                   <div className="text-emerald-700 font-bold text-xs uppercase mb-1">
                     🟢 Likely Choices
                   </div>
-                  <p className="text-[11px] text-slate-500">Safe anchor options where your rank is comfortably within previous cutoffs.</p>
+                  <p className="text-[11px] text-slate-500">Historical comparison only; it is not a guarantee of allotment.</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                   <div className="text-amber-700 font-bold text-xs uppercase mb-1">
                     🟡 Possible Choices
                   </div>
-                  <p className="text-[11px] text-slate-500">Realistic targets with moderate competition in normal REAP rounds.</p>
+                  <p className="text-[11px] text-slate-500">Historical comparison only; actual allotment depends on category, quota and round.</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
                   <div className="text-rose-700 font-bold text-xs uppercase mb-1">
                     🔴 Stretch Choices
                   </div>
-                  <p className="text-[11px] text-slate-500">Aspirational dream colleges worth placing at the top of your choice sheet.</p>
+                  <p className="text-[11px] text-slate-500">Historical comparison only; do not use this as a prediction without verified matching records.</p>
                 </div>
               </div>
             </div>
