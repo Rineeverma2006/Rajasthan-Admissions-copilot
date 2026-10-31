@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Send, Bot, User, Sparkles, RotateCcw, HelpCircle, BookOpen, ShieldAlert } from 'lucide-react'
+import { Send, Bot, User, Sparkles, RotateCcw, HelpCircle, BookOpen, ShieldAlert, Languages } from 'lucide-react'
 import { SUGGESTED } from '../lib/chat'
 
 interface Message {
@@ -9,16 +9,25 @@ interface Message {
 }
 
 interface ApiMessage { role: 'user' | 'assistant'; content: string }
+type ChatLanguage = 'auto' | 'english' | 'hindi' | 'hinglish' | 'marwari'
+const LANGUAGES: { id: ChatLanguage; label: string; helper: string }[] = [
+  { id: 'auto', label: 'Auto detect', helper: 'Match my language' },
+  { id: 'english', label: 'English', helper: 'Clear English' },
+  { id: 'hindi', label: 'हिन्दी', helper: 'सरल हिन्दी' },
+  { id: 'hinglish', label: 'Hinglish', helper: 'Hindi + English' },
+  { id: 'marwari', label: 'मारवाड़ी', helper: 'Marwari / Rajasthani' },
+]
 
 export default function Assistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'bot',
-      text: 'Namaste! I am your Rajasthan Admission Copilot Assistant. Ask me about required documents, REAP choice filling strategies, cutoff evaluation, or scholarship portals.',
+      text: 'Namaste सा! I am your Rajasthan B.E./B.Tech Admission Copilot. English, हिन्दी, Hinglish ya Marwari mein puchho—REAP eligibility, branches, documents, counselling aur college options par madad karunga.',
       time: 'Just now',
     },
   ])
   const [input, setInput] = useState('')
+  const [language, setLanguage] = useState<ChatLanguage>('auto')
   const [isTyping, setIsTyping] = useState(false)
   const [apiError, setApiError] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -46,7 +55,7 @@ export default function Assistant() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: q, history: prior })
+        body: JSON.stringify({ message: q, history: prior, language })
       })
       const data = await response.json() as { answer?: string; error?: string }
       if (!response.ok || !data.answer) throw new Error(data.error || 'Could not get an AI response.')
@@ -65,7 +74,7 @@ export default function Assistant() {
     setMessages([
       {
         role: 'bot',
-        text: 'Conversation reset. Feel free to ask another admission question or click one of the suggested topics below.',
+        text: 'राम-राम सा! Chat reset ho gayi. REAP B.E./B.Tech admission ke baare mein English, हिन्दी, Hinglish ya Marwari mein puchho.',
         time: 'Just now',
       },
     ])
@@ -94,16 +103,16 @@ export default function Assistant() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-12">
+    <div className="max-w-5xl mx-auto space-y-5 pb-12">
       {/* Header */}
       <div className="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <span className="tag mb-1.5">Live AI • Source-Grounded When Data Is Available</span>
+          <span className="tag mb-1.5"><Sparkles size={12} /> REAP B.E./B.Tech • Multilingual AI</span>
           <h1 className="font-heading text-3xl font-extrabold text-navy-900 tracking-tight">
             AI Admission Assistant
           </h1>
           <p className="text-xs sm:text-sm text-slate-600">
-            Instant guidance on documents, counselling steps, seat allotments, and choice priority.
+            Ask naturally in English, Hindi, Hinglish or Marwari. Focused only on Rajasthan B.E./B.Tech admissions.
           </p>
         </div>
         <button
@@ -120,9 +129,19 @@ export default function Assistant() {
       <div className="rounded-xl bg-amber-50/70 border border-amber-200/80 p-3 text-xs text-amber-900 flex items-start gap-2.5">
         <ShieldAlert size={16} className="text-amber-700 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong>Guidance Notice:</strong> Responses use the server-side AI API and, when configured, published knowledge-base records. Missing or outdated sources may limit accuracy. Always verify deadlines, seat matrices, fees and eligibility on the relevant official admission portal.
+          <strong>Guidance Notice:</strong> This assistant focuses only on Rajasthan B.E./B.Tech admissions via REAP. It uses published knowledge-base records when available; verify deadlines, seat matrix, fees and eligibility on the official REAP portal.
         </p>
       </div>
+
+      <section className="rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-cyan-50 p-4 sm:p-5">
+        <div className="flex items-center gap-2 text-sm font-bold text-navy-900"><Languages size={18} className="text-royal" /> Choose your language</div>
+        <p className="mt-1 text-xs text-slate-600">Auto-detect is best if you mix Hindi and English. Marwari support is conversational; for complex official terms, I can explain in Hinglish too.</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {LANGUAGES.map(option => <button key={option.id} type="button" aria-pressed={language === option.id} onClick={() => setLanguage(option.id)} className={`rounded-xl border px-3 py-2 text-left transition ${language === option.id ? 'border-royal bg-royal text-white shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:border-royal/40'}`}>
+            <span className="block text-xs font-bold">{option.label}</span><span className={`mt-0.5 block text-[10px] ${language === option.id ? 'text-indigo-100' : 'text-slate-500'}`}>{option.helper}</span>
+          </button>)}
+        </div>
+      </section>
 
       {/* Suggested Questions Pill Row */}
       <div className="space-y-1.5">
@@ -223,7 +242,7 @@ export default function Assistant() {
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Ask about REAP, eligibility, documents, fees, deadlines..."
+              placeholder="Apni rank, REAP eligibility, branch ya documents ke baare mein puchho..."
               className="inp bg-white shadow-inner text-sm"
               aria-label="Your admission question"
               disabled={isTyping}
