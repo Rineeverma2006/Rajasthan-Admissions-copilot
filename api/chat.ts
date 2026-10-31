@@ -34,7 +34,17 @@ export default async function handler(req: Request, res: Response) {
         body: JSON.stringify({ query_text: message, match_count: 5 })
       })
       if (r.ok) {
-        const docs = await r.json() as Array<{ title:string; content:string; source_url:string; source_name:string; updated_at:string }>
+        let docs = await r.json() as Array<{ title:string; content:string; source_url:string; source_name:string; updated_at:string }>
+        // The knowledge search currently uses an English full-text index. If a Hindi,
+        // Hinglish, or Marwari query returns no match, retry with broad English REAP terms.
+        if (docs.length === 0) {
+          const fallback = await fetch(`${supabaseUrl}/rest/v1/rpc/search_admission_knowledge`, {
+            method: "POST",
+            headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ query_text: "REAP BTech eligibility admission Rajasthan", match_count: 5 })
+          })
+          if (fallback.ok) docs = await fallback.json() as Array<{ title:string; content:string; source_url:string; source_name:string; updated_at:string }>
+        }
         evidence = docs.map((d,i) => `[Source ${i+1}] ${d.title} — ${d.source_name}\nURL: ${d.source_url}\nLast updated: ${d.updated_at}\n${d.content}`).join("\n\n")
       }
     } catch { /* Chat remains available without retrieval; answer must disclose uncertainty. */ }
