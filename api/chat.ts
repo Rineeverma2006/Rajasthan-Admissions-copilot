@@ -83,6 +83,14 @@ ${evidence || "No matching knowledge-base records were found. State that you can
               ? "The configured AI model is not available to this API key. The site owner needs to verify OPENAI_MODEL and account access."
               : "The AI provider returned an error. Please try again; the site owner can inspect the provider diagnostic."
       console.error("OpenAI chat request failed", { status: response.status, code: providerCode, message: providerMessage.slice(0, 300) })
+      // Keep the chat interface responsive even when the paid AI provider is unavailable.
+      // This is a transparent fallback, not a fabricated admissions recommendation.
+      if (response.status === 429 && (lower.includes("quota") || lower.includes("billing") || lower.includes("exceeded"))) {
+        const fallbackAnswer = evidence
+          ? `Main AI response abhi generate nahi kar paa raha kyunki website ke OpenAI API credits khatam hain. Neeche available knowledge-base information de raha hoon; ise current notice se verify kar lena:\n\n${evidence}\n\nOfficial REAP portal: https://reaprajasthan.co.in/\nOfficial seat matrix: https://cegadmissions.co.in/SeatsMatrix/Index?Project=REAP\n\nFull conversational answers restore karne ke liye site owner ko OpenAI API billing mein credits add karne honge.`
+          : `Main abhi full AI answer generate nahi kar paa raha kyunki website ke OpenAI API credits khatam hain. Main verified college/cutoff records ke bina college names ya admission chances guess nahi karunga.\n\nOfficial REAP portal: https://reaprajasthan.co.in/\nOfficial REAP seat matrix: https://cegadmissions.co.in/SeatsMatrix/Index?Project=REAP\n\nFull chatbot answers restore karne ke liye site owner ko OpenAI API billing mein credits add karne honge.`
+        return res.status(200).json({ answer: fallbackAnswer, grounded: Boolean(evidence), sources: evidence ? evidence.split("\\n\\n").filter(Boolean).length : 0, fallback: true })
+      }
       return res.status(502).json({ error: userMessage, detail: providerCode || `HTTP ${response.status}` })
     }
     const answer = data.choices?.[0]?.message?.content
