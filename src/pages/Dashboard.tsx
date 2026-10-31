@@ -60,7 +60,7 @@ export default function Dashboard() {
                   Welcome, Candidate
                 </h1>
                 <span className="rounded-full bg-gold-400/20 border border-gold-300/30 px-2.5 py-0.5 text-[10px] font-bold uppercase text-gold-300">
-                  REAP 2024 Aspirant
+                  REAP 2026 Aspirant
                 </span>
               </div>
               <p className="mt-1 text-xs sm:text-sm text-slate-300">
