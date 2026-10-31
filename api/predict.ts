@@ -28,11 +28,17 @@ export default async function handler(req: Request, res: Response) {
       rows = historic.filter(([b]) => !branch || b.toLowerCase() === branch.toLowerCase() || (aliases[b] || []).some(a => a === branch.toLowerCase())).map(([b,cutoff],i) => ({id:String(-2400-i),college_name:"MBM University",city:"Jodhpur",branch:b,annual_fee:null,cutoff_rank:cutoff,cutoff_year:2022,counselling:"REAP",source_url:source,verified_at:null}))
     }
     const results = rows.filter(c => Number(c.cutoff_rank) > 0).map(c => {
+      const historical = Number(c.id) < 0
+      // MBM labels these values indicative merits, not verified closing ranks.
+      // Avoid assigning admission-likelihood labels to this historical benchmark.
       const ratio = rank / Number(c.cutoff_rank)
-      const fit = ratio <= 0.85 ? "Likely" : ratio <= 1.15 ? "Possible" : "Stretch"
-      const historicalNote = Number(c.id) < 0 ? "Published MBM University REAP-2022 indicative merit; source says values are based on candidate self-declaration, not verified by the Admission Office. Fee is unavailable. Not a current-year cutoff or admission guarantee." : `Stored cutoff: ${Number(c.cutoff_rank).toLocaleString()} for ${c.cutoff_year}. Historical comparison, not an admission guarantee.`
+      const fit = historical ? "Historical reference" : (ratio <= 0.85 ? "Likely" : ratio <= 1.15 ? "Possible" : "Stretch")
+      const historicalNote = historical ? "Published MBM University REAP-2022 indicative merit only. Source says values are candidate self-declared and not verified by the Admission Office. Fee is unknown, so budget fit cannot be confirmed. This is not a verified closing rank or current-year admission prediction." : `Stored cutoff: ${Number(c.cutoff_rank).toLocaleString()} for ${c.cutoff_year}. Historical comparison, not an admission guarantee.`
       return { ...c, fit, note: `Your entered rank: ${rank.toLocaleString()}. ${historicalNote}` }
-    }).sort((a,b) => ({Likely:0,Possible:1,Stretch:2}[a.fit] - {Likely:0,Possible:1,Stretch:2}[b.fit]) || a.cutoff_rank-b.cutoff_rank)
+    }).sort((a,b) => {
+      const order: Record<string,number> = {"Likely":0,"Possible":1,"Stretch":2,"Historical reference":3}
+      return (order[a.fit] ?? 4) - (order[b.fit] ?? 4) || a.cutoff_rank-b.cutoff_rank
+    })
     return res.status(200).json({ results, count: results.length, dataStatus: results.length ? (results.some(c => Number(c.id) < 0) ? "historical_published_benchmark" : "historical_database_records") : "no_verified_matches", disclaimer: results.some(c => Number(c.id) < 0) ? "Limited MBM University REAP-2022 indicative merit benchmark only. Source says candidate self-declared and not verified by the Admission Office. No fee, category-wise or round-wise data is available; not current-year advice." : "Predictions compare your entered rank with stored historical cutoff records. Actual allotment depends on counselling rules, category, quota, round, seat availability and current-year competition." })
   } catch {
     return res.status(502).json({ error: "Database request failed. Please try again." })
