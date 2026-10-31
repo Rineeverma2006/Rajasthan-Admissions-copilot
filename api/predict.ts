@@ -14,7 +14,7 @@ export default async function handler(req: Request, res: Response) {
   const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) return res.status(503).json({ error: "Database is not configured. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel." })
   try {
-    const params = new URLSearchParams({ select: "id,college_name,city,branch,annual_fee,cutoff_rank,cutoff_year,counselling,source_url,verified_at", counselling: `eq.${counselling}`, annual_fee: `lte.${budget}`, cutoff_rank: "not.is.null", order: "cutoff_year.desc", limit: "500" })
+    const params = new URLSearchParams({ select: "id,college_name,city,branch,annual_fee,cutoff_rank,cutoff_year,counselling,source_url,verified_at", counselling: `eq.${counselling}`, or: `(annual_fee.lte.${budget},annual_fee.is.null)`, cutoff_rank: "not.is.null", order: "cutoff_year.desc", limit: "500" })
     if (branch) params.set("branch", `eq.${branch}`)
     if (city) params.set("city", `eq.${city}`)
     const r = await fetch(`${url}/rest/v1/college_programs?${params}`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })
@@ -28,7 +28,7 @@ export default async function handler(req: Request, res: Response) {
       rows = historic.filter(([b]) => !branch || b.toLowerCase() === branch.toLowerCase() || (aliases[b] || []).some(a => a === branch.toLowerCase())).map(([b,cutoff],i) => ({id:String(-2400-i),college_name:"MBM University",city:"Jodhpur",branch:b,annual_fee:null,cutoff_rank:cutoff,cutoff_year:2022,counselling:"REAP",source_url:source,verified_at:null}))
     }
     const results = rows.filter(c => Number(c.cutoff_rank) > 0).map(c => {
-      const historical = Number(c.id) < 0
+      const historical = Number(c.id) < 0 || (c.college_name === "MBM University" && Number(c.cutoff_year) === 2022 && !c.verified_at)
       // MBM labels these values indicative merits, not verified closing ranks.
       // Avoid assigning admission-likelihood labels to this historical benchmark.
       const ratio = rank / Number(c.cutoff_rank)
