@@ -1,0 +1,32 @@
+type Request = { method?: string; body?: unknown }
+type Response = { status: (code:number)=>Response; json: (data:unknown)=>void; setHeader: (name:string,value:string)=>void }
+
+export default async function handler(req: Request, res: Response) {
+  res.setHeader("Cache-Control", "no-store")
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" })
+  const body = req.body as { rank?: unknown; branch?: unknown; city?: unknown; budget?: unknown; counselling?: unknown } | undefined
+  const rank = Number(body?.rank), budget = Number(body?.budget ?? 500000)
+  const branch = typeof body?.branch === "string" ? body.branch.trim() : ""
+  const city = typeof body?.city === "string" ? body.city.trim() : ""
+  const counselling = typeof body?.counselling === "string" ? body.counselling.trim() : "REAP"
+  if (!Number.isInteger(rank) || rank < 1 || rank > 10000000) return res.status(400).json({ error: "Rank must be a positive whole number." })
+  if (!Number.isFinite(budget) || budget < 0) return res.status(400).json({ error: "Budget must be zero or higher." })
+  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return res.status(503).json({ error: "Database is not configured. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel." })
+  try {
+    const params = new URLSearchParams({ select: "id,college_name,city,branch,annual_fee,cutoff_rank,cutoff_year,counselling,source_url,verified_at", counselling: `eq.${counselling}`, annual_fee: `lte.${budget}`, cutoff_rank: "not.is.null", order: "cutoff_year.desc", limit: "500" })
+    if (branch) params.set("branch", `eq.${branch}`)
+    if (city) params.set("city", `eq.${city}`)
+    const r = await fetch(`${url}/rest/v1/college_programs?${params}`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })
+    if (!r.ok) return res.status(502).json({ error: "Could not retrieve college records from the database." })
+    const rows = await r.json() as Array<{id:string;college_name:string;city:string;branch:string;annual_fee:number;cutoff_rank:number;cutoff_year:number;counselling:string;source_url:string;verified_at:string|null}>
+    const results = rows.filter(c => Number(c.cutoff_rank) > 0).map(c => {
+      const ratio = rank / Number(c.cutoff_rank)
+      const fit = ratio <= 0.85 ? "Likely" : ratio <= 1.15 ? "Possible" : "Stretch"
+      return { ...c, fit, note: `Your entered rank: ${rank.toLocaleString()}; stored cutoff: ${Number(c.cutoff_rank).toLocaleString()} for ${c.cutoff_year}. This is a historical comparison, not an admission guarantee.` }
+    }).sort((a,b) => ({Likely:0,Possible:1,Stretch:2}[a.fit] - {Likely:0,Possible:1,Stretch:2}[b.fit]) || a.cutoff_rank-b.cutoff_rank)
+    return res.status(200).json({ results, count: results.length, dataStatus: results.length ? "historical_database_records" : "no_verified_matches", disclaimer: "Predictions compare your entered rank with stored historical cutoff records. Actual allotment depends on counselling rules, category, quota, round, seat availability and current-year competition." })
+  } catch {
+    return res.status(502).json({ error: "Database request failed. Please try again." })
+  }
+}
