@@ -30,9 +30,10 @@ export default async function handler(req: Request, res: Response) {
     const results = rows.filter(c => Number(c.cutoff_rank) > 0).map(c => {
       const ratio = rank / Number(c.cutoff_rank)
       const fit = ratio <= 0.85 ? "Likely" : ratio <= 1.15 ? "Possible" : "Stretch"
-      return { ...c, fit, note: `Your entered rank: ${rank.toLocaleString()}; stored cutoff: ${Number(c.cutoff_rank).toLocaleString()} for ${c.cutoff_year}. This is a historical comparison, not an admission guarantee.` }
+      const historicalNote = Number(c.id) < 0 ? "Published MBM University REAP-2022 indicative merit; source says values are based on candidate self-declaration, not verified by the Admission Office. Fee is unavailable. Not a current-year cutoff or admission guarantee." : `Stored cutoff: ${Number(c.cutoff_rank).toLocaleString()} for ${c.cutoff_year}. Historical comparison, not an admission guarantee.`
+      return { ...c, fit, note: `Your entered rank: ${rank.toLocaleString()}. ${historicalNote}` }
     }).sort((a,b) => ({Likely:0,Possible:1,Stretch:2}[a.fit] - {Likely:0,Possible:1,Stretch:2}[b.fit]) || a.cutoff_rank-b.cutoff_rank)
-    return res.status(200).json({ results, count: results.length, dataStatus: results.length ? "historical_database_records" : "no_verified_matches", disclaimer: "Predictions compare your entered rank with stored historical cutoff records. Actual allotment depends on counselling rules, category, quota, round, seat availability and current-year competition." })
+    return res.status(200).json({ results, count: results.length, dataStatus: results.length ? (results.some(c => Number(c.id) < 0) ? "historical_published_benchmark" : "historical_database_records") : "no_verified_matches", disclaimer: results.some(c => Number(c.id) < 0) ? "Limited MBM University REAP-2022 indicative merit benchmark only. Source says candidate self-declared and not verified by the Admission Office. No fee, category-wise or round-wise data is available; not current-year advice." : "Predictions compare your entered rank with stored historical cutoff records. Actual allotment depends on counselling rules, category, quota, round, seat availability and current-year competition." })
   } catch {
     return res.status(502).json({ error: "Database request failed. Please try again." })
   }
