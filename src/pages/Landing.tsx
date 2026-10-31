@@ -97,7 +97,27 @@ export default function Landing() {
   ]
 
   return (
-    <div className="space-y-16 pb-12">
+    <div className="space-y-10 pb-12">
+      {/* Chatbot-first hero: the core product experience */}
+      <section className="relative overflow-hidden rounded-3xl border border-indigo-200 bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-900 px-5 py-8 text-white shadow-2xl sm:px-10 sm:py-12">
+        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" />
+        <div className="absolute -bottom-20 left-1/3 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="relative z-10 grid items-center gap-8 lg:grid-cols-[1.05fr_.95fr]">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-violet-300/30 bg-white/10 px-3 py-1 text-xs font-semibold text-violet-100"><Sparkles size={14} /> Your AI-first B.E. / B.Tech guide</span>
+            <h1 className="mt-5 max-w-2xl font-heading text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl">Rajasthan engineering admissions, <span className="text-cyan-300">samjho apni bhasha mein.</span></h1>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-indigo-100 sm:text-base">Ask about REAP, eligibility, branches, documents and counselling in English, हिन्दी, Hinglish or Marwari. Clear guidance, with official-source checks for important details.</p>
+            <div className="mt-5 flex flex-wrap gap-2">{['English', 'हिन्दी', 'Hinglish', 'मारवाड़ी'].map(language => <span key={language} className="rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white">{language}</span>)}</div>
+            <Link to="/assistant" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg transition hover:bg-cyan-200"><MessageSquare size={17} /> Chat with Admission Copilot <ArrowRight size={16} /></Link>
+            <p className="mt-3 text-xs text-indigo-200">Focused only on Rajasthan B.E./B.Tech admissions through REAP.</p>
+          </div>
+          <div className="rounded-2xl border border-white/15 bg-white/10 p-4 shadow-xl backdrop-blur-md sm:p-5">
+            <div className="flex items-center gap-3 border-b border-white/10 pb-4"><div className="grid h-11 w-11 place-items-center rounded-xl bg-cyan-300 text-slate-950"><MessageSquare size={22} /></div><div><p className="font-bold text-white">Ask your admission question</p><p className="mt-0.5 text-xs text-indigo-200">English · Hindi · Hinglish · Marwari</p></div><span className="ml-auto rounded-full bg-emerald-400/15 px-2 py-1 text-[10px] font-bold text-emerald-200">AI CHAT</span></div>
+            <div className="space-y-3 py-4"><div className="max-w-[90%] rounded-2xl rounded-tl-sm bg-white/10 p-3 text-sm text-indigo-50">Mhari JEE Main rank su B.Tech college mil sake?</div><div className="ml-auto max-w-[92%] rounded-2xl rounded-tr-sm bg-cyan-300 p-3 text-sm font-medium text-slate-950">Apni rank, category aur Rajasthan domicile status batao. Main available REAP information ke basis par options samjhaunga—bina cutoff guess kiye.</div><div className="flex flex-wrap gap-2 pt-1">{['Eligibility kya hai?', 'College kaise choose karun?', 'REAP documents'].map(question => <Link key={question} to="/assistant" className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-white transition hover:bg-white/10">{question}</Link>)}</div></div>
+            <Link to="/assistant" className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15">Open full chatbot <ArrowRight size={15} /></Link>
+          </div>
+        </div>
+      </section>
       {/* 1. HERO SECTION */}
       <section className="relative overflow-hidden rounded-3xl bg-navy-950 text-white shadow-2xl border border-navy-800">
         {/* Background Image with Dark Navy Overlay */}
@@ -124,7 +144,7 @@ export default function Landing() {
           {/* Subtle Rajasthan Heritage Tag */}
           <div className="inline-flex items-center gap-2 rounded-full bg-gold-500/15 border border-gold-400/30 px-3.5 py-1 text-xs font-semibold text-gold-300 backdrop-blur-md mb-6">
             <span className="h-2 w-2 rounded-full bg-gold-400 animate-pulse" />
-            <span>Rajasthan Technical Admissions 2024–25 • REAP & Direct Entry</span>
+            <span>Rajasthan B.E./B.Tech Admissions • REAP 2026</span>
           </div>
 
           <h1 className="font-heading text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-tight">
@@ -132,7 +152,7 @@ export default function Landing() {
           </h1>
 
           <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-            Navigate government, deemed, and premier private engineering colleges across Jaipur, Jodhpur, Kota, and Pilani. Access transparent fee structures, cutoff benchmarks, and smart admission tools.
+            Explore Rajasthan B.E./B.Tech colleges, branches, fees and REAP counselling information. Use the AI chatbot as your first stop for admission questions.
           </p>
 
           {/* Prominent Search Bar */}
@@ -204,7 +224,7 @@ export default function Landing() {
               <span className="text-xs text-slate-400">Free Open Guidance</span>
             </div>
             <div>
-              <span className="block font-heading text-2xl font-bold text-royal-400">REAP 2024</span>
+              <span className="block font-heading text-2xl font-bold text-royal-400">REAP 2026</span>
               <span className="text-xs text-slate-400">Ready Reference</span>
             </div>
           </div>
