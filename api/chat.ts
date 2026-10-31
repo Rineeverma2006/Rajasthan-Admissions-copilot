@@ -68,7 +68,23 @@ ${evidence || "No matching knowledge-base records were found. State that you can
       })
     })
     const data = await response.json() as { choices?: Array<{ message?: { content?: string } }>; error?: { message?: string } }
-    if (!response.ok) return res.status(502).json({ error: "The AI provider could not complete the request.", detail: data.error?.message || "Provider error" })
+    if (!response.ok) {
+      const providerMessage = data.error?.message || "Provider error"
+      const providerCode = (data.error as {code?:string; type?:string} | undefined)?.code || (data.error as {type?:string} | undefined)?.type || ""
+      // Give users a useful, non-secret diagnostic instead of a generic failure.
+      const lower = providerMessage.toLowerCase()
+      const userMessage = response.status === 401
+        ? "AI configuration issue: the OpenAI API key is invalid or no longer active. The site owner needs to update OPENAI_API_KEY in Vercel."
+        : response.status === 429 && (lower.includes("quota") || lower.includes("billing") || lower.includes("exceeded"))
+          ? "AI usage quota or billing limit reached. The site owner needs to check OpenAI API billing and usage limits."
+          : response.status === 429
+            ? "The AI service is rate-limited right now. Please wait briefly and try again."
+            : response.status === 400 && lower.includes("model")
+              ? "The configured AI model is not available to this API key. The site owner needs to verify OPENAI_MODEL and account access."
+              : "The AI provider returned an error. Please try again; the site owner can inspect the provider diagnostic."
+      console.error("OpenAI chat request failed", { status: response.status, code: providerCode, message: providerMessage.slice(0, 300) })
+      return res.status(502).json({ error: userMessage, detail: providerCode || `HTTP ${response.status}` })
+    }
     const answer = data.choices?.[0]?.message?.content
     if (!answer) return res.status(502).json({ error: "The AI provider returned an empty response." })
     return res.status(200).json({ answer, grounded: Boolean(evidence), sources: evidence ? evidence.split("\n\n").filter(Boolean).length : 0 })
