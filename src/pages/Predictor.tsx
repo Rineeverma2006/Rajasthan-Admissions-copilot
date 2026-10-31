@@ -288,7 +288,7 @@ export default function Predictor() {
             <div className="space-y-4">
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
                 <h3 className="font-heading text-lg font-bold text-navy-900">Database-backed recommendations ({liveResults.count})</h3>
-                <p className="mt-1 text-xs text-slate-500">Rank {Number(f.rank).toLocaleString()} · {f.branch || 'All branches'} · {liveResults.dataStatus === 'historical_database_records' ? 'Historical database records found' : 'No matching records found'}</p>
+                <p className="mt-1 text-xs text-slate-500">Rank {Number(f.rank).toLocaleString()} · {f.branch || 'All branches'} · {liveResults.count > 0 ? `${liveResults.count} historical/database record${liveResults.count === 1 ? '' : 's'} found` : 'No matching records found'}</p>
                 <p className="mt-3 text-xs text-amber-800">{liveResults.disclaimer}</p>
               </div>
               {liveResults.results.length === 0 ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-600">No records match these filters. This can mean the database has not yet been populated with verified cutoff data.</div> : (
@@ -296,7 +296,7 @@ export default function Predictor() {
                   <div key={c.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div><h4 className="font-heading font-bold text-navy-900">{c.college_name}</h4><p className="mt-1 text-xs text-slate-500">{c.city} · {c.branch} · {c.counselling}</p></div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${c.fit === 'Likely' ? 'bg-emerald-50 text-emerald-800' : c.fit === 'Possible' ? 'bg-amber-50 text-amber-800' : 'bg-rose-50 text-rose-800'}`}>{c.fit}</span>
+                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${c.fit === 'Likely' ? 'bg-emerald-50 text-emerald-800' : c.fit === 'Possible' ? 'bg-amber-50 text-amber-800' : c.fit === 'Historical reference' ? 'bg-sky-50 text-sky-800' : 'bg-rose-50 text-rose-800'}`}>{c.fit}</span>
                     </div>
                     <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-slate-600"><div>Historical cutoff rank<strong className="block mt-1 text-slate-900">{Number(c.cutoff_rank).toLocaleString()} ({c.cutoff_year})</strong></div><div>Annual fee<strong className="block mt-1 text-slate-900">{c.annual_fee == null ? 'Not available' : '₹' + Number(c.annual_fee).toLocaleString('en-IN')}</strong></div></div>
                     <p className="mt-3 text-xs leading-relaxed text-slate-600">{c.note}</p>
