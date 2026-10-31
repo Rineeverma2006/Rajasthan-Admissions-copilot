@@ -20,16 +20,12 @@ export default async function handler(req: Request, res: Response) {
     const r = await fetch(`${url}/rest/v1/college_programs?${params}`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })
     if (!r.ok) return res.status(502).json({ error: "Could not retrieve college records from the database." })
     let rows = await r.json() as Array<{id:string;college_name:string;city:string;branch:string;annual_fee:number|null;cutoff_rank:number;cutoff_year:number;counselling:string;source_url:string;verified_at:string|null}>
-    if (rows.length === 0 && !city && !branch) {
-      // Limited MBM University REAP-2022 published benchmark. Source says indicative/self-declared.
+    if (rows.length === 0 && (!city || /jodhpur/i.test(city))) {
+      // Limited MBM University REAP-2022 published benchmark. The source describes these as indicative/self-declared.
       const source = "https://api.mbm.ac.in/assets/a2e441bd-a951-43e1-bd27-3bbf04085766.pdf"
-      const historic = [["CSE",476],["AI & Data Science",1632],["Chemical",3261],["Civil",4402],["Electrical",3998],["ECE",1986],["IT",643],["Mechanical",3667],["Mining",4411],["Petroleum",3731],["Production & Industrial",3711]]
-      rows = historic.map((x,i) => ({id:String(-2200-i),college_name:"MBM University",city:"Jodhpur",branch:String(x[0]),annual_fee:null,cutoff_rank:Number(x[1]),cutoff_year:2022,counselling:"REAP",source_url:source,verified_at:null}))
-    }
-    if (rows.length === 0 && /jodhpur/i.test(city)) {
-      const source = "https://api.mbm.ac.in/assets/a2e441bd-a951-43e1-bd27-3bbf04085766.pdf"
-      const historic = [["CSE",476],["AI & Data Science",1632],["Chemical",3261],["Civil",4402],["Electrical",3998],["ECE",1986],["IT",643],["Mechanical",3667],["Mining",4411],["Petroleum",3731],["Production & Industrial",3711]]
-      rows = historic.filter(x => !branch || String(x[0]).toLowerCase() === branch.toLowerCase()).map((x,i) => ({id:String(-2300-i),college_name:"MBM University",city:"Jodhpur",branch:String(x[0]),annual_fee:null,cutoff_rank:Number(x[1]),cutoff_year:2022,counselling:"REAP",source_url:source,verified_at:null}))
+      const historic: Array<[string,number]> = [["CSE",476],["AI & Data Science",1632],["Chemical",3261],["Civil",4402],["Electrical",3998],["ECE",1986],["IT",643],["Mechanical",3667],["Mining",4411],["Petroleum",3731],["Production & Industrial",3711]]
+      const aliases: Record<string,string[]> = {"CSE":["cse","computer science","computer science and engineering"],"AI & Data Science":["ai & data science","ai","artificial intelligence and data science"],"ECE":["ece","electronics and communication","electronics & communication"],"IT":["it","information technology"]}
+      rows = historic.filter(([b]) => !branch || b.toLowerCase() === branch.toLowerCase() || (aliases[b] || []).some(a => a === branch.toLowerCase())).map(([b,cutoff],i) => ({id:String(-2400-i),college_name:"MBM University",city:"Jodhpur",branch:b,annual_fee:null,cutoff_rank:cutoff,cutoff_year:2022,counselling:"REAP",source_url:source,verified_at:null}))
     }
     const results = rows.filter(c => Number(c.cutoff_rank) > 0).map(c => {
       const ratio = rank / Number(c.cutoff_rank)
