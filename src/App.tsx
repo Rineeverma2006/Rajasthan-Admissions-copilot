@@ -10,7 +10,7 @@ import Compare from './pages/Compare'
 
 export default function App() {
   return (
-    <div className="app-shell flex min-h-screen flex-col bg-[#080d1b] font-sans text-slate-100 antialiased selection:bg-cyan-300/30 selection:text-cyan-100">
+    <div className="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-700 antialiased">
       {/* Top Premium Navigation Bar */}
       <Navbar />
 
