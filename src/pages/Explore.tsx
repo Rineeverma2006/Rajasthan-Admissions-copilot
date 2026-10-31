@@ -79,7 +79,7 @@ export default function Explore() {
               Explore Colleges in Rajasthan
             </h1>
             <p className="mt-1 text-sm text-slate-600">
-              Browse top engineering universities, compare verified campus infrastructure, and evaluate sample fee structures.
+              Browse demo college profiles and use filters to explore the interface. Fee and cutoff figures are illustrative—not verified REAP data.
             </p>
           </div>
           <div className="text-right">
@@ -92,6 +92,8 @@ export default function Explore() {
           </div>
         </div>
       </div>
+
+      <div role="note" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950"><strong>Demo dataset notice:</strong> College cards and displayed fee/rank figures are illustrative UI data, not verified current REAP records. Confirm each institution’s admission route and current details from official sources before relying on them.</div>
 
       {/* Filter & Search Bar */}
       <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-card space-y-4">
