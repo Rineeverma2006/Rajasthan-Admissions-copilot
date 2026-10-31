@@ -118,119 +118,17 @@ export default function Landing() {
           </div>
         </div>
       </section>
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden rounded-3xl bg-navy-950 text-white shadow-2xl border border-navy-800">
-        {/* Background Image with Dark Navy Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1920&q=80"
-            alt="Rajasthan architectural heritage campus"
-            onError={e => {
-              // fallback to local vector svg
-              const target = e.target as HTMLImageElement
-              if (target.src !== '/images/rajasthan-hero.svg') {
-                target.src = '/images/rajasthan-hero.svg'
-              }
-            }}
-            className="h-full w-full object-cover object-center opacity-30"
-          />
-          {/* Deep Navy / Indigo Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-900/90 to-navy-950/80" />
-          <div className="absolute inset-0 bg-radial-at-c from-transparent via-navy-950/40 to-navy-950" />
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 px-6 py-16 sm:px-12 sm:py-20 lg:px-16 lg:py-24 max-w-4xl">
-          {/* Subtle Rajasthan Heritage Tag */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-gold-500/15 border border-gold-400/30 px-3.5 py-1 text-xs font-semibold text-gold-300 backdrop-blur-md mb-6">
-            <span className="h-2 w-2 rounded-full bg-gold-400 animate-pulse" />
-            <span>Rajasthan B.E./B.Tech Admissions • REAP 2026</span>
+      {/* Compact college search strip */}
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
+        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search size={17} className="pointer-events-none absolute left-3.5 top-3.5 text-slate-400" />
+            <input value={heroSearch} onChange={e => setHeroSearch(e.target.value)} placeholder="Find an engineering college, branch or city…" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-100" />
           </div>
-
-          <h1 className="font-heading text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-tight">
-            Find Your Future in <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-amber-200 to-gold-400">Rajasthan</span>
-          </h1>
-
-          <p className="mt-5 text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
-            Explore Rajasthan B.E./B.Tech colleges, branches, fees and REAP counselling information. Use the AI chatbot as your first stop for admission questions.
-          </p>
-
-          {/* Prominent Search Bar */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="mt-8 flex flex-col sm:flex-row items-stretch gap-2 rounded-2xl bg-white/10 p-2 backdrop-blur-md border border-white/20 shadow-xl max-w-2xl"
-          >
-            <div className="relative flex-1 flex items-center">
-              <Search size={18} className="absolute left-3.5 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                value={heroSearch}
-                onChange={e => setHeroSearch(e.target.value)}
-                placeholder="Search colleges, courses (CSE, ECE), or cities (Jaipur, Kota)..."
-                className="w-full rounded-xl bg-white px-4 py-3 pl-10 text-sm text-navy-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-royal shadow-inner"
-              />
-            </div>
-            <button
-              type="submit"
-              className="btn-p py-3 px-6 text-sm font-semibold whitespace-nowrap bg-royal hover:bg-royal-700 shadow-lg text-white"
-            >
-              Search Colleges
-            </button>
-          </form>
-
-          {/* Quick Filter Pill Shortcuts */}
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-300">
-            <span className="text-slate-400">Popular searches:</span>
-            {['MNIT Jaipur', 'IIT Jodhpur', 'CSE', 'Govt Colleges', 'Under ₹1.5L'].map(q => (
-              <button
-                key={q}
-                type="button"
-                onClick={() => navigate(`/explore?q=${encodeURIComponent(q === 'Govt Colleges' ? 'Government' : q)}`)}
-                className="rounded-full bg-white/10 hover:bg-white/20 border border-white/10 px-2.5 py-0.5 transition-colors text-slate-200"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-
-          {/* CTA Action Buttons */}
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link
-              to="/explore"
-              className="btn-p py-3 px-6 text-sm font-semibold rounded-xl bg-royal hover:bg-royal-700 shadow-md flex items-center gap-2"
-            >
-              Explore Colleges <ArrowRight size={16} />
-            </Link>
-            <Link
-              to="/predictor"
-              className="btn-s py-3 px-6 text-sm font-semibold rounded-xl bg-white/15 text-white border-white/30 hover:bg-white/25 hover:text-white backdrop-blur-sm"
-            >
-              Find My College (Predictor)
-            </Link>
-          </div>
-
-          {/* Stats Bar */}
-          <div className="mt-12 pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center sm:text-left">
-            <div>
-              <span className="block font-heading text-2xl font-bold text-white">10+</span>
-              <span className="text-xs text-slate-400">Curated Campuses</span>
-            </div>
-            <div>
-              <span className="block font-heading text-2xl font-bold text-gold-400">₹60K - ₹4.8L</span>
-              <span className="text-xs text-slate-400">Sample Annual Fees</span>
-            </div>
-            <div>
-              <span className="block font-heading text-2xl font-bold text-white">100%</span>
-              <span className="text-xs text-slate-400">Free Open Guidance</span>
-            </div>
-            <div>
-              <span className="block font-heading text-2xl font-bold text-royal-400">REAP 2026</span>
-              <span className="text-xs text-slate-400">Ready Reference</span>
-            </div>
-          </div>
-        </div>
+          <button type="submit" className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-950"><Search size={16} /> Explore colleges</button>
+        </form>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600"><span className="font-semibold text-slate-500">Try:</span>{['CSE', 'Jaipur', 'Government colleges', 'Fees'].map(q => <button key={q} type="button" onClick={() => navigate(`/explore?q=${encodeURIComponent(q === 'Government colleges' ? 'Government' : q)}`)} className="rounded-full border border-slate-200 bg-white px-3 py-1.5 transition hover:border-indigo-300 hover:bg-indigo-50">{q}</button>)}</div>
       </section>
-
       {/* 2. FOUR FEATURE CARDS */}
       <section className="space-y-4">
         <div className="text-center max-w-2xl mx-auto space-y-1.5">
@@ -287,14 +185,14 @@ export default function Landing() {
               Explore Top Colleges in Rajasthan
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              Handpicked institutions featuring verified campus photos, benchmark closing cutoffs, and fee breakdowns.
+              Explore institution profiles and available programme information. Confirm fees and cutoffs with the linked official sources before making decisions.
             </p>
           </div>
           <Link
             to="/explore"
             className="btn-s text-xs font-semibold whitespace-nowrap self-start sm:self-auto"
           >
-            View All 10 Colleges <ChevronRight size={14} />
+            Explore Colleges <ChevronRight size={14} />
           </Link>
         </div>
 
