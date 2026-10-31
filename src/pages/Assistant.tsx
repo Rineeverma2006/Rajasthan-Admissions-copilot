@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, Bot, User, Sparkles, RotateCcw, HelpCircle, BookOpen, ShieldAlert } from 'lucide-react'
-import { reply, SUGGESTED } from '../lib/chat'
+import { SUGGESTED } from '../lib/chat'
 
 interface Message {
   role: 'user' | 'bot'
   text: string
   time: string
 }
+
+interface ApiMessage { role: 'user' | 'assistant'; content: string }
 
 export default function Assistant() {
   const [messages, setMessages] = useState<Message[]>([
@@ -18,6 +20,7 @@ export default function Assistant() {
   ])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [apiError, setApiError] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -28,22 +31,34 @@ export default function Assistant() {
     scrollToBottom()
   }, [messages, isTyping])
 
-  const handleSend = (textToSend: string) => {
+  const handleSend = async (textToSend: string) => {
     const q = textToSend.trim()
     if (!q || isTyping) return
-
     const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const prior = messages.filter(m => m.role !== 'bot' || messages.indexOf(m) > 0).slice(-8)
+      .filter(m => m.text && !(m.role === 'bot' && m.text.startsWith('Namaste!')))
+      .map(m => ({ role: m.role === 'bot' ? 'assistant' : 'user', content: m.text } as ApiMessage))
     setMessages(prev => [...prev, { role: 'user', text: q, time: now }])
     setInput('')
     setIsTyping(true)
-
-    // Simulate responsive response latency
-    setTimeout(() => {
-      const answer = reply(q)
+    setApiError('')
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: q, history: prior })
+      })
+      const data = await response.json() as { answer?: string; error?: string }
+      if (!response.ok || !data.answer) throw new Error(data.error || 'Could not get an AI response.')
       const botTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      setMessages(prev => [...prev, { role: 'bot', text: answer, time: botTime }])
+      setMessages(prev => [...prev, { role: 'bot', text: data.answer!, time: botTime }])
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Something went wrong.'
+      setApiError(message)
+      setMessages(prev => [...prev, { role: 'bot', text: `I could not verify an answer right now. ${message} Please try again later. Do not rely on an unverified deadline or cutoff.`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }])
+    } finally {
       setIsTyping(false)
-    }, 450)
+    }
   }
 
   const handleReset = () => {
@@ -83,7 +98,7 @@ export default function Assistant() {
       {/* Header */}
       <div className="border-b border-slate-200 pb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <span className="tag mb-1.5">Rule-Based Knowledge Guide</span>
+          <span className="tag mb-1.5">Live AI • Source-Grounded When Data Is Available</span>
           <h1 className="font-heading text-3xl font-extrabold text-navy-900 tracking-tight">
             AI Admission Assistant
           </h1>
@@ -105,7 +120,7 @@ export default function Assistant() {
       <div className="rounded-xl bg-amber-50/70 border border-amber-200/80 p-3 text-xs text-amber-900 flex items-start gap-2.5">
         <ShieldAlert size={16} className="text-amber-700 shrink-0 mt-0.5" />
         <p className="leading-relaxed">
-          <strong>Guidance Notice:</strong> Responses are powered by a curated, local knowledge base designed for technical admission orientation. Official deadlines, verification schedules, and seat matrices must be confirmed on official portals (e.g. <em>reap2024.com</em>).
+          <strong>Guidance Notice:</strong> Responses use the server-side AI API and, when configured, published knowledge-base records. Missing or outdated sources may limit accuracy. Always verify deadlines, seat matrices, fees and eligibility on the relevant official admission portal.
         </p>
       </div>
 
@@ -208,7 +223,7 @@ export default function Assistant() {
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
-              placeholder="Ask about required certificates, choice priority, or cutoffs..."
+              placeholder="Ask about REAP, eligibility, documents, fees, deadlines..."
               className="inp bg-white shadow-inner text-sm"
               aria-label="Your admission question"
               disabled={isTyping}
