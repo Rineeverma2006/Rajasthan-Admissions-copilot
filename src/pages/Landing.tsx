@@ -48,7 +48,7 @@ export default function Landing() {
     },
     {
       title: 'Explore Colleges',
-      desc: 'Discover premier engineering universities across Jaipur, Jodhpur, Kota, and Pilani with transparent fees.',
+      desc: 'Explore demo college profiles and filters; verify admission routes, fees and cutoffs from official sources.',
       icon: Search,
       to: '/explore',
       cta: 'Explore All Colleges',
@@ -57,7 +57,7 @@ export default function Landing() {
     },
     {
       title: 'College Predictor',
-      desc: 'Calculate your admission probability into Likely, Possible, and Stretch options based on your rank.',
+      desc: 'Query verified historical REAP cutoffs when available. The live cutoff database is not populated yet.',
       icon: Sparkles,
       to: '/predictor',
       cta: 'Find My College',
@@ -66,7 +66,7 @@ export default function Landing() {
     },
     {
       title: 'Compare Colleges',
-      desc: 'Evaluate tuition fees, cutoff trends, branches, and campus facilities side-by-side in one place.',
+      desc: 'Compare the current profile fields side-by-side; sample values are clearly labelled as demo data.',
       icon: GitCompare,
       to: '/compare',
       cta: 'Compare Side-by-Side',
@@ -85,7 +85,7 @@ export default function Landing() {
     {
       step: '02',
       title: 'Get Transparent Fit Analysis',
-      desc: 'Our deterministic model benchmarks your score against historical cutoffs to group colleges into Likely, Possible, and Stretch fits.',
+      desc: 'The live predictor searches verified cutoff records. Until records are added, it will show no matches rather than invent results.',
       icon: Building2,
     },
     {
@@ -185,7 +185,7 @@ export default function Landing() {
               Explore Top Colleges in Rajasthan
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              Explore institution profiles and available programme information. Confirm fees and cutoffs with the linked official sources before making decisions.
+              Explore institution profiles and interface filters. Fee and cutoff values are illustrative demo data; verify them with official sources.
             </p>
           </div>
           <Link
