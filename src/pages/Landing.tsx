@@ -118,6 +118,10 @@ export default function Landing() {
           </div>
         </div>
       </section>
+      <section className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex items-start gap-3"><span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-amber-500" /><div><p className="text-sm font-bold text-amber-950">REAP 2026 schedule notice</p><p className="mt-0.5 text-xs leading-relaxed text-amber-900">Published 2026 registration and counselling dates have passed. Check the official portal for any newer notice or the next cycle before acting.</p></div></div>
+        <a href="https://reaprajasthan.co.in/" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-bold text-amber-950 transition hover:bg-amber-100">Official REAP portal <ArrowRight size={14} /></a>
+      </section>
       {/* Compact college search strip */}
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5">
         <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 sm:flex-row">
