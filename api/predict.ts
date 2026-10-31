@@ -19,7 +19,7 @@ export default async function handler(req: Request, res: Response) {
     if (city) params.set("city", `eq.${city}`)
     const r = await fetch(`${url}/rest/v1/college_programs?${params}`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })
     if (!r.ok) return res.status(502).json({ error: "Could not retrieve college records from the database." })
-    const rows = await r.json() as Array<{id:string;college_name:string;city:string;branch:string;annual_fee:number;cutoff_rank:number;cutoff_year:number;counselling:string;source_url:string;verified_at:string|null}>
+    let rows = await r.json() as Array<{id:string;college_name:string;city:string;branch:string;annual_fee:number|null;cutoff_rank:number;cutoff_year:number;counselling:string;source_url:string;verified_at:string|null}>
     const results = rows.filter(c => Number(c.cutoff_rank) > 0).map(c => {
       const ratio = rank / Number(c.cutoff_rank)
       const fit = ratio <= 0.85 ? "Likely" : ratio <= 1.15 ? "Possible" : "Stretch"
