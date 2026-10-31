@@ -7,6 +7,8 @@ import CollegeModal from '../components/CollegeModal'
 
 const cities = [...new Set(COLLEGES.map(c => c.city))].sort()
 
+type LivePrediction = { results: Array<{ id: number; college_name: string; city: string; branch: string; annual_fee: number | null; cutoff_rank: number; cutoff_year: number; counselling: string; source_url: string; verified_at: string | null; fit: 'Likely' | 'Possible' | 'Stretch'; note: string }>; count: number; dataStatus: string; disclaimer: string }
+
 export default function Predictor() {
   const [f, setF] = useState({
     rank: '',
@@ -16,42 +18,55 @@ export default function Predictor() {
   })
   const [err, setErr] = useState('')
   const [res, setRes] = useState<Result[] | null>(null)
+  const [liveResults, setLiveResults] = useState<LivePrediction | null>(null)
+  const [liveError, setLiveError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null)
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     const rank = Number(f.rank)
     if (!f.rank || !Number.isInteger(rank) || rank < 1) {
       setErr('Please enter a valid entrance rank (whole number of 1 or greater).')
       setRes(null)
+      setLiveResults(null)
       return
     }
     setErr('')
-    const results = recommend({
-      rank,
-      branch: f.branch,
-      city: f.city,
-      budget: Number(f.budget),
-    })
-    setRes(results)
+    setLiveError('')
+    setLoading(true)
+    setRes(null)
+    setLiveResults(null)
+    try {
+      const response = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rank, branch: f.branch, city: f.city, budget: Number(f.budget), counselling: 'REAP' })
+      })
+      const data = await response.json() as LivePrediction & { error?: string }
+      if (!response.ok) throw new Error(data.error || 'Unable to retrieve live database results.')
+      setLiveResults(data)
+    } catch (error) {
+      setLiveError(error instanceof Error ? error.message : 'Prediction request failed.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handlePreset = (presetRank: string, branch: string, budget: string) => {
     setF({ rank: presetRank, branch, city: '', budget })
     setErr('')
-    const results = recommend({
-      rank: Number(presetRank),
-      branch,
-      city: '',
-      budget: Number(budget),
-    })
-    setRes(results)
+    setRes(null)
+    setLiveResults(null)
+    setLiveError('')
   }
 
   const handleReset = () => {
     setF({ rank: '', branch: 'CSE', city: '', budget: '300000' })
     setErr('')
     setRes(null)
+    setLiveResults(null)
+    setLiveError('')
   }
 
   const likelyCount = res ? res.filter(r => r.fit === 'Likely').length : 0
@@ -189,10 +204,11 @@ export default function Predictor() {
               <div className="pt-2">
                 <button
                   type="submit"
+                  disabled={loading}
                   className="btn-p w-full py-3 text-sm font-semibold shadow-md flex items-center justify-center gap-2"
                 >
                   <Sparkles size={16} />
-                  Find My College Recommendations
+                  {loading ? 'Checking Verified Database…' : 'Find My College Recommendations'}
                 </button>
               </div>
             </form>
@@ -262,7 +278,35 @@ export default function Predictor() {
 
         {/* Right Column: Recommendations or Onboarding State */}
         <div className="lg:col-span-7 space-y-5">
-          {res === null ? (
+          {liveError ? (
+            <div role="alert" className="rounded-2xl border border-amber-200 bg-amber-50 p-6 shadow-card">
+              <h3 className="font-heading text-lg font-bold text-amber-950">Live prediction unavailable</h3>
+              <p className="mt-2 text-sm text-amber-900">{liveError}</p>
+              <p className="mt-2 text-xs text-amber-800">This predictor requires the deployed database and verified historical cutoff records. It will not substitute mock cutoffs for live results.</p>
+            </div>
+          ) : liveResults !== null ? (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
+                <h3 className="font-heading text-lg font-bold text-navy-900">Database-backed recommendations ({liveResults.count})</h3>
+                <p className="mt-1 text-xs text-slate-500">Rank {Number(f.rank).toLocaleString()} · {f.branch || 'All branches'} · {liveResults.dataStatus === 'historical_database_records' ? 'Historical database records found' : 'No matching records found'}</p>
+                <p className="mt-3 text-xs text-amber-800">{liveResults.disclaimer}</p>
+              </div>
+              {liveResults.results.length === 0 ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-600">No records match these filters. This can mean the database has not yet been populated with verified cutoff data.</div> : (
+                <div className="space-y-3">{liveResults.results.map((c) => (
+                  <div key={c.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div><h4 className="font-heading font-bold text-navy-900">{c.college_name}</h4><p className="mt-1 text-xs text-slate-500">{c.city} · {c.branch} · {c.counselling}</p></div>
+                      <span className={`rounded-full px-3 py-1 text-xs font-bold ${c.fit === 'Likely' ? 'bg-emerald-50 text-emerald-800' : c.fit === 'Possible' ? 'bg-amber-50 text-amber-800' : 'bg-rose-50 text-rose-800'}`}>{c.fit}</span>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-slate-600"><div>Historical cutoff rank<strong className="block mt-1 text-slate-900">{Number(c.cutoff_rank).toLocaleString()} ({c.cutoff_year})</strong></div><div>Annual fee<strong className="block mt-1 text-slate-900">{c.annual_fee == null ? 'Not available' : '₹' + Number(c.annual_fee).toLocaleString('en-IN')}</strong></div></div>
+                    <p className="mt-3 text-xs leading-relaxed text-slate-600">{c.note}</p>
+                    <a className="mt-2 inline-block text-xs font-semibold text-royal underline" href={c.source_url} target="_blank" rel="noreferrer">View source record ↗</a>
+                    {c.verified_at && <p className="mt-1 text-[11px] text-slate-400">Verified: {new Date(c.verified_at).toLocaleDateString()}</p>}
+                  </div>
+                ))}</div>
+              )}
+            </div>
+          ) : res === null ? (
             /* Empty / Guide State */
             <div className="rounded-2xl border border-slate-200 bg-white p-8 sm:p-12 text-center shadow-card">
               <div className="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-royal-50 text-royal mb-4">
