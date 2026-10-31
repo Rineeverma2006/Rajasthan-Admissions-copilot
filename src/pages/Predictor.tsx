@@ -5,14 +5,16 @@ import { recommend, Result } from '../lib/predict'
 import CollegeCard from '../components/CollegeCard'
 import CollegeModal from '../components/CollegeModal'
 
-const cities = [...new Set(COLLEGES.map(c => c.city))].sort()
+const reapCities = ['Ajmer', 'Alwar', 'Banswara', 'Baran', 'Barmer', 'Bharatpur', 'Bhilwara', 'Bikaner', 'Bundi', 'Chittorgarh', 'Dausa', 'Dholpur', 'Jaipur', 'Jhalawar', 'Jhunjhunu', 'Jodhpur', 'Karauli', 'Kota', 'Pali', 'Rajsamand', 'Sawai Madhopur', 'Sikar', 'Sirohi', 'Sriganganagar', 'Tonk', 'Udaipur']
+const cities = [...new Set([...COLLEGES.map(c => c.city), ...reapCities])].sort()
 
-type LivePrediction = { results: Array<{ id: number; college_name: string; city: string; branch: string; annual_fee: number | null; cutoff_rank: number; cutoff_year: number; counselling: string; source_url: string; verified_at: string | null; fit: 'Likely' | 'Possible' | 'Stretch' | 'Historical reference'; note: string }>; count: number; dataStatus: string; disclaimer: string }
+type LivePrediction = { results: Array<{ id: number; college_name: string; city: string; branch: string; annual_fee: number | null; cutoff_rank: number; cutoff_year: number; counselling: string; source_url: string; verified_at: string | null; category: string | null; quota: string | null; round: string | null; fit: 'Likely' | 'Possible' | 'Stretch' | 'Historical reference'; note: string }>; count: number; dataStatus: string; disclaimer: string }
 
 export default function Predictor() {
   const [f, setF] = useState({
     rank: '',
     branch: 'CSE',
+    category: 'GEN',
     city: '',
     budget: '300000',
   })
@@ -41,7 +43,7 @@ export default function Predictor() {
       const response = await fetch('/api/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rank, branch: f.branch, city: f.city, budget: Number(f.budget), counselling: 'REAP' })
+        body: JSON.stringify({ rank, branch: f.branch, category: f.category, city: f.city, budget: Number(f.budget), counselling: 'REAP' })
       })
       const data = await response.json() as LivePrediction & { error?: string }
       if (!response.ok) throw new Error(data.error || 'Unable to retrieve live database results.')
@@ -54,7 +56,7 @@ export default function Predictor() {
   }
 
   const handlePreset = (presetRank: string, branch: string, budget: string) => {
-    setF({ rank: presetRank, branch, city: '', budget })
+    setF({ rank: presetRank, branch, category: 'GEN', city: '', budget })
     setErr('')
     setRes(null)
     setLiveResults(null)
@@ -62,7 +64,7 @@ export default function Predictor() {
   }
 
   const handleReset = () => {
-    setF({ rank: '', branch: 'CSE', city: '', budget: '300000' })
+    setF({ rank: '', branch: 'CSE', category: 'GEN', city: '', budget: '300000' })
     setErr('')
     setRes(null)
     setLiveResults(null)
@@ -164,6 +166,20 @@ export default function Predictor() {
                 </select>
               </div>
 
+              {/* REAP Category */}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">REAP Category</label>
+                <select className="inp" value={f.category} onChange={e => setF({ ...f, category: e.target.value })}>
+                  {[
+                    ['GEN', 'General (GEN)'], ['EWS', 'EWS'], ['OBC', 'OBC'], ['SC', 'SC'], ['ST', 'ST'],
+                    ['MBC', 'MBC'], ['TSP', 'TSP'], ['FGEN', 'Female General (FGEN)'], ['FOBC', 'Female OBC (FOBC)'],
+                    ['FSC', 'Female SC (FSC)'], ['FST', 'Female ST (FST)'], ['FEWS', 'Female EWS (FEWS)'],
+                    ['FMBC', 'Female MBC (FMBC)'], ['FTSP', 'Female TSP (FTSP)']
+                  ].map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>
+                <p className="mt-1 text-[11px] text-slate-400">Category-specific historical cutoffs are matched where available.</p>
+              </div>
+
               {/* Target City */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
@@ -208,7 +224,7 @@ export default function Predictor() {
                   className="btn-p w-full py-3 text-sm font-semibold shadow-md flex items-center justify-center gap-2"
                 >
                   <Sparkles size={16} />
-                  {loading ? 'Checking Verified Database…' : 'Find My College Recommendations'}
+                  {loading ? 'Checking historical cutoff database…' : 'Find My College Recommendations'}
                 </button>
               </div>
             </form>
@@ -288,14 +304,14 @@ export default function Predictor() {
             <div className="space-y-4">
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card">
                 <h3 className="font-heading text-lg font-bold text-navy-900">Database-backed recommendations ({liveResults.count})</h3>
-                <p className="mt-1 text-xs text-slate-500">Rank {Number(f.rank).toLocaleString()} · {f.branch || 'All branches'} · {liveResults.count > 0 ? `${liveResults.count} historical/database record${liveResults.count === 1 ? '' : 's'} found` : 'No matching records found'}</p>
+                <p className="mt-1 text-xs text-slate-500">Rank {Number(f.rank).toLocaleString()} · {f.category} · {f.branch || 'All branches'} · {liveResults.count > 0 ? `${liveResults.count} historical/database record${liveResults.count === 1 ? '' : 's'} found` : 'No matching records found'}</p>
                 <p className="mt-3 text-xs text-amber-800">{liveResults.disclaimer}</p>
               </div>
-              {liveResults.results.length === 0 ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-600">No records match these filters. This can mean the database has not yet been populated with verified cutoff data.</div> : (
+              {liveResults.results.length === 0 ? <div className="rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-600">No records match these filters. Try another category, branch or city; some categories or branches may have no listed seat/cutoff in the 2019 Round 1 file.</div> : (
                 <div className="space-y-3">{liveResults.results.map((c) => (
                   <div key={c.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div><h4 className="font-heading font-bold text-navy-900">{c.college_name}</h4><p className="mt-1 text-xs text-slate-500">{c.city} · {c.branch} · {c.counselling}</p></div>
+                      <div><h4 className="font-heading font-bold text-navy-900">{c.college_name}</h4><p className="mt-1 text-xs text-slate-500">{c.city} · {c.branch} · {c.counselling} · {c.category ?? 'Category unavailable'} · {c.quota ?? 'Quota unavailable'} · {c.round ?? 'Round unavailable'}</p></div>
                       <span className={`rounded-full px-3 py-1 text-xs font-bold ${c.fit === 'Likely' ? 'bg-emerald-50 text-emerald-800' : c.fit === 'Possible' ? 'bg-amber-50 text-amber-800' : c.fit === 'Historical reference' ? 'bg-sky-50 text-sky-800' : 'bg-rose-50 text-rose-800'}`}>{c.fit}</span>
                     </div>
                     <div className="mt-3 grid grid-cols-2 gap-3 text-xs text-slate-600"><div>Historical cutoff rank<strong className="block mt-1 text-slate-900">{Number(c.cutoff_rank).toLocaleString()} ({c.cutoff_year})</strong></div><div>Annual fee<strong className="block mt-1 text-slate-900">{c.annual_fee == null ? 'Not available' : '₹' + Number(c.annual_fee).toLocaleString('en-IN')}</strong></div></div>
@@ -316,7 +332,7 @@ export default function Predictor() {
                 Check available historical references
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                Enter your details to search the available database. Historical MBM University indicative merits may appear; these are self-declared, not verified closing ranks, and do not establish current-year admission chances.
+                Enter your rank, branch, category and location to search available historical REAP records. The imported 2019 data is Round 1 category-wise reference material, not a current-year prediction.
               </p>
               <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
